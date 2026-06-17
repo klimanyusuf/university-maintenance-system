@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('access_token');
         if (token) {
             try {
-                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                api.defaults.headers.common['Authorization'] = Bearer PASTE_TOKEN_HERE;
                 const response = await api.get('/auth/users/me/');
                 setUser(response.data);
             } catch (error) {
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     };
 
-        const login = async (username, password) => {
+    const login = async (username, password) => {
         console.log('🔐 Login attempt:', username);
         try {
             const response = await api.post('/token/', { username, password });
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
             if (response.data.access) {
                 localStorage.setItem('access_token', response.data.access);
                 localStorage.setItem('refresh_token', response.data.refresh);
-                api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+                api.defaults.headers.common['Authorization'] = Bearer ;
                 const userResponse = await api.get('/auth/users/me/');
                 setUser(userResponse.data);
                 enqueueSnackbar('Login successful!', { variant: 'success' });
@@ -49,22 +49,6 @@ export const AuthProvider = ({ children }) => {
             return false;
         } catch (error) {
             console.error('❌ Login error:', error);
-            enqueueSnackbar('Login failed', { variant: 'error' });
-            return false;
-        }
-    };);
-            if (response.data.access) {
-                localStorage.setItem('access_token', response.data.access);
-                localStorage.setItem('refresh_token', response.data.refresh);
-                api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-                const userResponse = await api.get('/auth/users/me/');
-                setUser(userResponse.data);
-                enqueueSnackbar('Login successful!', { variant: 'success' });
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Login error:', error);
             enqueueSnackbar('Login failed', { variant: 'error' });
             return false;
         }
@@ -95,4 +79,3 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-
