@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('access_token');
         if (token) {
             try {
-                api.defaults.headers.common['Authorization'] = Bearer PASTE_TOKEN_HERE;
+                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 const response = await api.get('/auth/users/me/');
                 setUser(response.data);
             } catch (error) {
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
             if (response.data.access) {
                 localStorage.setItem('access_token', response.data.access);
                 localStorage.setItem('refresh_token', response.data.refresh);
-                api.defaults.headers.common['Authorization'] = Bearer ;
+                api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
                 const userResponse = await api.get('/auth/users/me/');
                 setUser(userResponse.data);
                 enqueueSnackbar('Login successful!', { variant: 'success' });
