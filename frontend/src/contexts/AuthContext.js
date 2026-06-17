@@ -32,10 +32,28 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     };
 
-    const login = async (username, password) => {
+        const login = async (username, password) => {
         console.log('🔐 Login attempt:', username);
         try {
             const response = await api.post('/token/', { username, password });
+            console.log('✅ Token response:', response.data);
+            if (response.data.access) {
+                localStorage.setItem('access_token', response.data.access);
+                localStorage.setItem('refresh_token', response.data.refresh);
+                console.log('💾 Token stored in localStorage');
+                api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+                const userResponse = await api.get('/auth/users/me/');
+                setUser(userResponse.data);
+                enqueueSnackbar('Login successful!', { variant: 'success' });
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('❌ Login error:', error);
+            enqueueSnackbar('Login failed', { variant: 'error' });
+            return false;
+        }
+    };);
             console.log('✅ Token response:', response.data);
             if (response.data.access) {
                 localStorage.setItem('access_token', response.data.access);
@@ -79,3 +97,4 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+

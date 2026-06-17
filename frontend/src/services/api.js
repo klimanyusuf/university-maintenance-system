@@ -11,6 +11,18 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
+        console.log('🔍 Interceptor – token:', token);
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log('✅ Authorization header added:', config.headers.Authorization);
+        } else {
+            console.warn('⚠️ No token found in localStorage');
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+); => {
+        const token = localStorage.getItem('access_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -44,3 +56,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+
