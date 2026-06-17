@@ -12,11 +12,22 @@ export const NotificationProvider = ({ children }) => {
         fetchUnreadCount();
     }, []);
 
-    const fetchUnreadCount = async () => {
+        const fetchUnreadCount = async () => {
         try {
             const response = await api.get('/notifications/unread_count/');
             setUnreadCount(response.data.unread_count || 0);
         } catch (err) {
+            if (err.response && err.response.status === 404) {
+                try {
+                    const response2 = await api.get('/notifications/notifications/unread_count/');
+                    setUnreadCount(response2.data.unread_count || 0);
+                    return;
+                } catch (e2) { /* ignore */ }
+            }
+            console.warn('Unread count unavailable');
+            setUnreadCount(0);
+        }
+    }; catch (err) {
         if (err.response && err.response.status === 404) {
             console.warn('Unread count endpoint not found (404) – ignoring');
         } else {
@@ -32,4 +43,5 @@ export const NotificationProvider = ({ children }) => {
         </NotificationContext.Provider>
     );
 };
+
 
