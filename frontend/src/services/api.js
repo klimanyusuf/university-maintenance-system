@@ -7,44 +7,21 @@ const api = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor: add token
+console.log('🔍 API_BASE_URL:', API_BASE_URL);
+
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
-        console.log('🔍 [Interceptor] Token found:', token ? 'YES (starts with ' + token.substring(0,20) + '...)' : 'NO');
+        console.log('🔍 [Interceptor] Token:', token ? 'YES' : 'NO');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
             console.log('✅ [Interceptor] Added Authorization header');
-        } else {
-            console.warn('⚠️ [Interceptor] No token in localStorage');
-        }
-        console.log('🔍 [Interceptor] Request URL:', config.url);
-        return config;
-    },
-    (error) => Promise.reject(error)
-); => {
-        const token = localStorage.getItem('access_token');
-        console.log('🔍 Interceptor – token:', token);
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-            console.log('✅ Authorization header added:', config.headers.Authorization);
-        } else {
-            console.warn('⚠️ No token found in localStorage');
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-); => {
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// Response interceptor: refresh token on 401
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -69,5 +46,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
-
