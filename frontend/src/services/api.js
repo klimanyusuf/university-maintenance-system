@@ -4,12 +4,10 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
 });
 
-// Add token to every request if available
+// Request interceptor: add token
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
@@ -21,7 +19,7 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Refresh token on 401 (optional)
+// Response interceptor: refresh token on 401
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -37,7 +35,6 @@ api.interceptors.response.use(
                     return api(originalRequest);
                 }
             } catch (e) {
-                // refresh failed – log out
                 localStorage.clear();
                 window.location.href = '/login';
             }

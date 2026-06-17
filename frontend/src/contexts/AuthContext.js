@@ -22,41 +22,31 @@ export const AuthProvider = ({ children }) => {
             try {
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 const response = await api.get('/auth/users/me/');
-                console.log('✅ User fetched:', response.data);
                 setUser(response.data);
-                localStorage.setItem('user', JSON.stringify(response.data));
             } catch (error) {
-                console.error('❌ Failed to fetch user:', error);
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
-                localStorage.removeItem('user');
                 delete api.defaults.headers.common['Authorization'];
             }
         }
         setLoading(false);
     };
 
-        const login = async (username, password) => {
+    const login = async (username, password) => {
         try {
             const response = await api.post('/token/', { username, password });
             if (response.data.access) {
                 localStorage.setItem('access_token', response.data.access);
                 localStorage.setItem('refresh_token', response.data.refresh);
                 api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-                console.log('Token stored:', localStorage.getItem('access_token'));
                 const userResponse = await api.get('/auth/users/me/');
                 setUser(userResponse.data);
+                enqueueSnackbar('Login successful!', { variant: 'success' });
                 return true;
             }
             return false;
         } catch (error) {
             console.error('Login error:', error);
-            return false;
-        }
-    };
-            return false;
-        } catch (error) {
-            console.error('❌ Login error:', error);
             enqueueSnackbar('Login failed', { variant: 'error' });
             return false;
         }
@@ -87,4 +77,3 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-
