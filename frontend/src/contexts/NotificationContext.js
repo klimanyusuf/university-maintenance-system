@@ -17,9 +17,13 @@ export const NotificationProvider = ({ children }) => {
             const response = await api.get('/notifications/unread_count/');
             setUnreadCount(response.data.unread_count || 0);
         } catch (err) {
+        if (err.response && err.response.status === 404) {
+            console.warn('Unread count endpoint not found (404) – ignoring');
+        } else {
             console.error('Failed to fetch unread count:', err);
-            setUnreadCount(0);
         }
+        setUnreadCount(0);
+    }
     };
 
     return (
@@ -28,3 +32,4 @@ export const NotificationProvider = ({ children }) => {
         </NotificationContext.Provider>
     );
 };
+
