@@ -22,5 +22,5 @@ COPY . .
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Run the application
+# Use absolute path to wsgi.py
 CMD gunicorn --bind 0.0.0.0:\ maintenance_api.wsgi:application
