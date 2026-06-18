@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Grid, Paper, Typography, Box, Card, CardContent, Avatar, Button, LinearProgress } from '@mui/material';
-import { Assignment, CheckCircle, Pending, Build, People, Assessment, AddCircle } from '@mui/icons-material';
+import { Assignment, CheckCircle, Pending, Build, AddCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -18,11 +18,10 @@ export default function Dashboard() {
         }
     }, [user]);
 
-        const fetchDashboardData = async () => {
+    const fetchDashboardData = async () => {
         try {
             const response = await api.get('/requests/');
-            console.log('🔍 Dashboard API Response:', response.data);
-            let rawData = response.data.results || response.data;
+            const rawData = response.data.results || response.data;
             const requests = Array.isArray(rawData) ? rawData : [];
             setStats({
                 total: requests.length,
@@ -38,22 +37,12 @@ export default function Dashboard() {
         } finally {
             setLoading(false);
         }
-    };);
-            setRecentRequests(requests.slice(0, 5));
-        } catch (error) {
-            console.error('Failed to fetch dashboard data:', error);
-            setStats({ total: 0, pending: 0, inProgress: 0, completed: 0 });
-            setRecentRequests([]);
-        } finally {
-            setLoading(false);
-        }
     };
 
     if (loading) return <LinearProgress />;
 
     const roleName = user?.role_name || user?.role?.name || 'student';
 
-    // ---------- Student / Staff Dashboard ----------
     const StudentStaffDashboard = () => (
         <Box>
             <Typography variant="h4" gutterBottom>Welcome, {user?.first_name || user?.username}!</Typography>
@@ -90,7 +79,6 @@ export default function Dashboard() {
         </Box>
     );
 
-    // ---------- Officer Dashboard ----------
     const OfficerDashboard = () => (
         <Box>
             <Typography variant="h4" gutterBottom>Welcome, {user?.first_name || user?.username}!</Typography>
@@ -127,7 +115,6 @@ export default function Dashboard() {
         </Box>
     );
 
-    // ---------- Admin Dashboard ----------
     const AdminDashboard = () => (
         <Box>
             <Typography variant="h4" gutterBottom>Welcome, {user?.first_name || user?.username}!</Typography>
@@ -173,7 +160,6 @@ export default function Dashboard() {
         </Box>
     );
 
-    // ---------- Render based on role ----------
     let DashboardComponent;
     if (roleName === 'admin') DashboardComponent = AdminDashboard;
     else if (roleName === 'officer') DashboardComponent = OfficerDashboard;
@@ -185,4 +171,3 @@ export default function Dashboard() {
         </Box>
     );
 }
-

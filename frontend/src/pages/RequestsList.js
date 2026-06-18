@@ -1,16 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import {
-    Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, Chip, IconButton, Button, TextField, MenuItem, Select, FormControl,
-    InputLabel, Pagination, Box, LinearProgress, Typography
-} from '@mui/material';
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, IconButton, Button, TextField, MenuItem, Select, FormControl, InputLabel, Pagination, Box, LinearProgress, Typography } from '@mui/material';
 import { Visibility, Add } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function RequestsList() {
-    const { user } = useAuth();
     const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -23,48 +17,21 @@ export default function RequestsList() {
         fetchRequests();
     }, [page, filters, search]);
 
-            const fetchRequests = async () => {
+    const fetchRequests = async () => {
         setLoading(true);
         try {
-            const params = { page, page_size: 10, search: search || undefined };
+            const params = { page, page_size: 10 };
+            if (search) params.search = search;
             if (filters.status) params.status = filters.status;
             if (filters.priority) params.priority = filters.priority;
             const response = await api.get('/requests/', { params });
             const rawData = response.data.results || response.data;
-            const requests = Array.isArray(rawData) ? rawData : [];
-            setRequests(requests);
-            setTotalPages(Math.ceil((response.data.count || requests.length) / 10));
+            const requestsData = Array.isArray(rawData) ? rawData : [];
+            setRequests(requestsData);
+            setTotalPages(Math.ceil((response.data.count || requestsData.length) / 10));
         } catch (error) {
             console.error('Failed to fetch requests:', error);
             setRequests([]);
-        } finally {
-            setLoading(false);
-        }
-    };;
-            if (filters.status) params.status = filters.status;
-            if (filters.priority) params.priority = filters.priority;
-            const response = await api.get('/requests/', { params });
-            
-            // SAFE: Ensure data is always an array
-            const rawData = response.data.results || response.data;
-            const requests = Array.isArray(rawData) ? rawData : [];
-            
-            setRequests(requests);
-            setTotalPages(Math.ceil((response.data.count || requests.length) / 10));
-        } catch (error) {
-            console.error('Failed to fetch requests:', error);
-            setRequests([]);
-        } finally {
-            setLoading(false);
-        }
-    };;
-            if (filters.status) params.status = filters.status;
-            if (filters.priority) params.priority = filters.priority;
-            const response = await api.get('/requests/', { params });
-            setRequests(response.data.results || response.data || []);
-            setTotalPages(Math.ceil((response.data.count || 0) / 10));
-        } catch (error) {
-            console.error('Failed to fetch requests:', error);
         } finally {
             setLoading(false);
         }
@@ -140,7 +107,7 @@ export default function RequestsList() {
                                     <TableCell><Chip label={req.priority} color={req.priority === 'urgent' ? 'error' : 'default'} size="small" /></TableCell>
                                     <TableCell>{new Date(req.created_at).toLocaleDateString()}</TableCell>
                                     <TableCell>
-                                        <IconButton size="small" onClick={() => navigate(`/requests/${req.id}`)}>
+                                        <IconButton size="small" onClick={() => navigate(/requests/)}>
                                             <Visibility />
                                         </IconButton>
                                     </TableCell>
@@ -157,5 +124,3 @@ export default function RequestsList() {
         </Container>
     );
 }
-
-
