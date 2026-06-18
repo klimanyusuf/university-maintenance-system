@@ -14,6 +14,8 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 10000
+# Use the PORT environment variable Render provides
+ENV PORT=10000
 
+# Bind to 0.0.0.0 so Render can route traffic
 CMD gunicorn --bind 0.0.0.0:\ maintenance_api.wsgi:application
