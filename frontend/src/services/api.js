@@ -7,15 +7,14 @@ const api = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Interceptor: add token to EVERY request
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
         if (token) {
-            // ALWAYS add token as query param (works around Hugging Face proxy)
+            // Add token as query parameter (bypasses proxy)
             const separator = config.url.includes('?') ? '&' : '?';
             config.url = config.url + separator + 'token=' + token;
-            // Also add Authorization header for standard compatibility
+            // Also keep Authorization header as fallback
             config.headers.Authorization = 'Bearer ' + token;
         }
         return config;
