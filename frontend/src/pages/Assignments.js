@@ -12,10 +12,12 @@ export default function Assignments() {
 
     const fetchAssignments = async () => {
         try {
-            const response = await api.get('/assignments/my_assignments/');
-            setAssignments(response.data.results || response.data || []);
+            const response = await api.get('/assignments/assignments/my_assignments/');
+            const rawData = response.data.results || response.data;
+            setAssignments(Array.isArray(rawData) ? rawData : []);
         } catch (err) {
             console.error('Failed to fetch assignments:', err);
+            setAssignments([]);
         } finally {
             setLoading(false);
         }
@@ -23,7 +25,7 @@ export default function Assignments() {
 
     const handleAccept = async (id) => {
         try {
-            await api.post(`/assignments/assignments/${id}/act/`), { action: 'accept' });
+            await api.post(`/assignments/assignments/${id}/act/`, { action: 'accept' });
             fetchAssignments();
         } catch (err) {
             alert('Failed to accept');
@@ -32,7 +34,7 @@ export default function Assignments() {
 
     const handleComplete = async (id) => {
         try {
-            await api.post(`/assignments/assignments/${id}/act/`), { action: 'complete' });
+            await api.post(`/assignments/assignments/${id}/act/`, { action: 'complete' });
             fetchAssignments();
         } catch (err) {
             alert('Failed to complete');
@@ -58,16 +60,18 @@ export default function Assignments() {
                         {assignments.length === 0 ? (
                             <TableRow><TableCell colSpan={4} align="center">No assignments</TableCell></TableRow>
                         ) : (
-                            assignments.map(a => (
+                            assignments.map((a) => (
                                 <TableRow key={a.id}>
                                     <TableCell>#{a.id}</TableCell>
-                                    <TableCell>{a.request.title}</TableCell>
-                                    <TableCell><Chip label={a.assignment_status} size="small" /></TableCell>
+                                    <TableCell>{a.request?.title || 'N/A'}</TableCell>
                                     <TableCell>
-                                        {a.assignment_status === 'pending' && (
+                                        <Chip label={a.assignment_status || a.status || 'Unknown'} size="small" />
+                                    </TableCell>
+                                    <TableCell>
+                                        {(a.assignment_status === 'pending' || a.status === 'pending') && (
                                             <Button size="small" color="primary" onClick={() => handleAccept(a.id)}>Accept</Button>
                                         )}
-                                        {a.assignment_status === 'accepted' && (
+                                        {(a.assignment_status === 'accepted' || a.status === 'accepted' || a.status === 'assigned') && (
                                             <Button size="small" color="success" onClick={() => handleComplete(a.id)}>Complete</Button>
                                         )}
                                     </TableCell>
@@ -80,4 +84,3 @@ export default function Assignments() {
         </Container>
     );
 }
-

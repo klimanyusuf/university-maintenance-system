@@ -6,7 +6,7 @@ import api from '../services/api';
 export default function Reports() {
     const handleExport = async (format) => {
         try {
-            const response = await api.get(`/requests/requests/export_${format}/`), { responseType: 'blob' });
+            const response = await api.get(`/requests/requests/export_${format}/`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -26,11 +26,14 @@ export default function Reports() {
             <Paper sx={{ p: 3 }}>
                 <Typography variant="h6" gutterBottom>Export Service Requests</Typography>
                 <Box display="flex" gap={2}>
-                    <Button variant="contained" startIcon={<GetApp />} onClick={() => handleExport('csv')}>Export CSV</Button>
-                    <Button variant="contained" startIcon={<GetApp />} onClick={() => handleExport('pdf')}>Export PDF</Button>
+                    <Button variant="contained" startIcon={<GetApp />} onClick={() => handleExport('csv')}>
+                        Export CSV
+                    </Button>
+                    <Button variant="contained" startIcon={<GetApp />} onClick={() => handleExport('pdf')}>
+                        Export PDF
+                    </Button>
                 </Box>
             </Paper>
         </Container>
     );
 }
-

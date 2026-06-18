@@ -38,7 +38,8 @@ export default function RequestDetail() {
     const fetchOfficers = async () => {
         try {
             const response = await api.get('/auth/users/', { params: { role: 'officer' } });
-            setOfficers(response.data.results || response.data || []);
+            const rawData = response.data.results || response.data;
+            setOfficers(Array.isArray(rawData) ? rawData : []);
         } catch (err) {
             console.error('Failed to fetch officers:', err);
         }
@@ -51,7 +52,7 @@ export default function RequestDetail() {
         }
         setUpdating(true);
         try {
-            await api.post(`/requests/requests/${id}/assign/`), { officer_id: selectedOfficer });
+            await api.post(`/requests/requests/${id}/assign/`, { officer_id: selectedOfficer });
             setSuccess('Request assigned successfully');
             fetchRequest();
         } catch (err) {
@@ -64,7 +65,7 @@ export default function RequestDetail() {
     const handleComplete = async () => {
         setUpdating(true);
         try {
-            await api.post(`/requests/requests/${id}/complete/`), { notes });
+            await api.post(`/requests/requests/${id}/complete/`, { notes });
             setSuccess('Request marked as completed');
             fetchRequest();
         } catch (err) {
@@ -80,7 +81,7 @@ export default function RequestDetail() {
 
     const isOfficer = user?.role_name === 'officer';
     const isAdmin = user?.role_name === 'admin';
-    const canComplete = isOfficer && request.status !== 'completed' && request.assigned_to?.id === user?.id;
+    const canComplete = isOfficer && request.status !== 'completed' && request.assigned_to === user?.id;
     const canAssign = isAdmin && request.status === 'pending';
 
     return (
@@ -95,7 +96,7 @@ export default function RequestDetail() {
                 <Typography variant="body1" paragraph>{request.description}</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
-                        <Typography variant="body2"><strong>Category:</strong> {request.category_name || 'N/A'}</Typography>
+                        <Typography variant="body2"><strong>Category:</strong> {request.category_name || request.category || 'N/A'}</Typography>
                     </Grid>
                     <Grid item xs={6}>
                         <Box>
@@ -128,7 +129,7 @@ export default function RequestDetail() {
                         <FormControl fullWidth>
                             <InputLabel>Select Officer</InputLabel>
                             <Select value={selectedOfficer} onChange={(e) => setSelectedOfficer(e.target.value)} label="Select Officer">
-                                {officers.map(o => (
+                                {officers.map((o) => (
                                     <MenuItem key={o.id} value={o.id}>{o.username}</MenuItem>
                                 ))}
                             </Select>
@@ -151,5 +152,3 @@ export default function RequestDetail() {
         </Container>
     );
 }
-
-
