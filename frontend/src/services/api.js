@@ -11,7 +11,19 @@ const api = axios.create({
 
 // Request interceptor
 api.interceptors.request.use(
-    function(config) {
+    (config) => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            // Send token as query parameter (workaround for proxy)
+            const separator = config.url.includes('?') ? '&' : '?';
+            config.url = config.url + separator + 'token=' + token;
+            // Keep Authorization header as fallback
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+); {
         const token = localStorage.getItem('access_token');
         if (token) {
             config.headers.Authorization = 'Bearer ' + token;
@@ -24,3 +36,4 @@ api.interceptors.request.use(
 );
 
 export default api;
+
