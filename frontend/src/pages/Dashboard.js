@@ -17,16 +17,33 @@ export default function Dashboard() {
         }
     }, [user]);
 
-    const fetchDashboardData = async () => {
+        const fetchDashboardData = async () => {
         try {
             const response = await api.get('/requests/');
-            const requests = response.data.results || response.data || [];
+            console.log('🔍 Dashboard API Response:', response.data);
+            
+            // SAFE: Ensure data is always an array
+            let rawData = response.data.results || response.data;
+            const requests = Array.isArray(rawData) ? rawData : [];
+            
+            console.log('📊 Requests count:', requests.length);
+            
             setStats({
                 total: requests.length,
                 pending: requests.filter(r => r.status === 'pending').length,
                 inProgress: requests.filter(r => r.status === 'in_progress').length,
                 completed: requests.filter(r => r.status === 'completed').length,
             });
+            setRecentRequests(requests.slice(0, 5));
+        } catch (error) {
+            console.error('Failed to fetch dashboard data:', error);
+            // Set empty stats to avoid crash
+            setStats({ total: 0, pending: 0, inProgress: 0, completed: 0 });
+            setRecentRequests([]);
+        } finally {
+            setLoading(false);
+        }
+    };);
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
         } finally {
@@ -171,3 +188,4 @@ export default function Dashboard() {
         </Box>
     );
 }
+
