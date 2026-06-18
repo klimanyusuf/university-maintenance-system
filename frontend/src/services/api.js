@@ -4,25 +4,27 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
+// Request interceptor
 api.interceptors.request.use(
-    (config) => {
+    function(config) {
         const token = localStorage.getItem('access_token');
         if (token) {
             // Add token as query parameter
-            if (config.url.includes('?')) {
-                config.url += &token=PASTE_TOKEN_HERE;
-            } else {
-                config.url += ?token=PASTE_TOKEN_HERE;
-            }
-            // Also keep Authorization header
-            config.headers.Authorization = Bearer PASTE_TOKEN_HERE;
+            const separator = config.url.includes('?') ? '&' : '?';
+            config.url = config.url + separator + 'token=' + token;
+            // Also add Authorization header
+            config.headers.Authorization = 'Bearer ' + token;
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    function(error) {
+        return Promise.reject(error);
+    }
 );
 
 export default api;
