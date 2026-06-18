@@ -23,10 +23,24 @@ export default function RequestsList() {
         fetchRequests();
     }, [page, filters, search]);
 
-        const fetchRequests = async () => {
+            const fetchRequests = async () => {
         setLoading(true);
         try {
             const params = { page, page_size: 10, search: search || undefined };
+            if (filters.status) params.status = filters.status;
+            if (filters.priority) params.priority = filters.priority;
+            const response = await api.get('/requests/', { params });
+            const rawData = response.data.results || response.data;
+            const requests = Array.isArray(rawData) ? rawData : [];
+            setRequests(requests);
+            setTotalPages(Math.ceil((response.data.count || requests.length) / 10));
+        } catch (error) {
+            console.error('Failed to fetch requests:', error);
+            setRequests([]);
+        } finally {
+            setLoading(false);
+        }
+    };;
             if (filters.status) params.status = filters.status;
             if (filters.priority) params.priority = filters.priority;
             const response = await api.get('/requests/', { params });
@@ -143,4 +157,5 @@ export default function RequestsList() {
         </Container>
     );
 }
+
 
