@@ -38,10 +38,10 @@ export default function Layout() {
             { text: (user?.role_name === 'admin' || user?.role_name === 'officer' ? 'Requests' : 'My Requests'), icon: <Assignment />, path: '/requests' },
             { text: 'New Request', icon: <AddCircle />, path: '/requests/new' },
         ];
-        if (user?.role?.name === 'officer') {
+        if (user?.role_name === 'officer') {
             items.push({ text: 'Assignments', icon: <Assignment />, path: '/assignments' });
         }
-        if (user?.role?.name === 'admin') {
+        if (user?.role_name === 'admin') {
             items.push({ text: 'Admin Panel', icon: <AdminPanelSettings />, path: '/admin' });
             items.push({ text: 'Reports', icon: <Assessment />, path: '/reports' });
         }
@@ -103,6 +103,7 @@ export default function Layout() {
         </Box>
     );
 }
+
 
 
 
