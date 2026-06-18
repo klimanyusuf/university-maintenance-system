@@ -15,17 +15,42 @@ export default function Dashboard() {
         if (user) fetchDashboardData();
     }, [user]);
 
-    const fetchDashboardData = async () => {
+        const fetchDashboardData = async () => {
         try {
             const response = await api.get('/requests/');
-            const rawData = response.data.results || response.data;
-            const requests = Array.isArray(rawData) ? rawData : [];
+            console.log('🔍 API Response:', response.data);
+            
+            // The API returns { requests: [...], categories: ... }
+            // We need to extract the requests array
+            let requests = [];
+            if (response.data && response.data.requests) {
+                requests = response.data.requests;
+            } else if (Array.isArray(response.data)) {
+                requests = response.data;
+            } else if (response.data.results) {
+                requests = response.data.results;
+            }
+            
+            // Ensure requests is an array
+            if (!Array.isArray(requests)) {
+                requests = [];
+            }
+            
             setStats({
                 total: requests.length,
                 pending: requests.filter(r => r.status === 'pending').length,
                 inProgress: requests.filter(r => r.status === 'in_progress').length,
                 completed: requests.filter(r => r.status === 'completed').length,
             });
+            setRecentRequests(requests.slice(0, 5));
+        } catch (error) {
+            console.error('Failed to fetch dashboard data:', error);
+            setStats({ total: 0, pending: 0, inProgress: 0, completed: 0 });
+            setRecentRequests([]);
+        } finally {
+            setLoading(false);
+        }
+    };);
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
             setStats({ total: 0, pending: 0, inProgress: 0, completed: 0 });
@@ -119,3 +144,4 @@ export default function Dashboard() {
 
     return <Box sx={{ p: 3 }}><DashboardComponent /></Box>;
 }
+
