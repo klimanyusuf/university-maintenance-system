@@ -16,5 +16,4 @@ RUN python manage.py collectstatic --noinput
 
 ENV PORT=10000
 
-# Correct path: maintenance_api.wsgi:application
 CMD gunicorn --bind 0.0.0.0:\ maintenance_api.wsgi:application
