@@ -23,7 +23,7 @@ export default function Assignments() {
 
     const handleAccept = async (id) => {
         try {
-            await api.post(`/assignments/${id}/act/`, { action: 'accept' });
+            await api.post(`/assignments/assignments/${id}/act/`), { action: 'accept' });
             fetchAssignments();
         } catch (err) {
             alert('Failed to accept');
@@ -32,7 +32,7 @@ export default function Assignments() {
 
     const handleComplete = async (id) => {
         try {
-            await api.post(`/assignments/${id}/act/`, { action: 'complete' });
+            await api.post(`/assignments/assignments/${id}/act/`), { action: 'complete' });
             fetchAssignments();
         } catch (err) {
             alert('Failed to complete');
@@ -80,3 +80,4 @@ export default function Assignments() {
         </Container>
     );
 }
+

@@ -26,7 +26,7 @@ export default function RequestDetail() {
 
     const fetchRequest = async () => {
         try {
-            const response = await api.get(`/requests/${id}/`);
+            const response = await api.get(`/requests/requests/${id}/`);
             setRequest(response.data);
         } catch (err) {
             setError('Failed to load request');
@@ -51,7 +51,7 @@ export default function RequestDetail() {
         }
         setUpdating(true);
         try {
-            await api.post(`/requests/${id}/assign/`, { officer_id: selectedOfficer });
+            await api.post(`/requests/requests/${id}/assign/`), { officer_id: selectedOfficer });
             setSuccess('Request assigned successfully');
             fetchRequest();
         } catch (err) {
@@ -64,7 +64,7 @@ export default function RequestDetail() {
     const handleComplete = async () => {
         setUpdating(true);
         try {
-            await api.post(`/requests/${id}/complete/`, { notes });
+            await api.post(`/requests/requests/${id}/complete/`), { notes });
             setSuccess('Request marked as completed');
             fetchRequest();
         } catch (err) {
@@ -151,4 +151,5 @@ export default function RequestDetail() {
         </Container>
     );
 }
+
 
