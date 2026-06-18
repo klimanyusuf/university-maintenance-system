@@ -10,6 +10,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const [stats, setStats] = useState({ total: 0, pending: 0, inProgress: 0, completed: 0 });
     const [loading, setLoading] = useState(true);
+    const [recentRequests, setRecentRequests] = useState([]);
 
     useEffect(() => {
         if (user) {
@@ -17,7 +18,7 @@ export default function Dashboard() {
         }
     }, [user]);
 
-        const fetchDashboardData = async () => {
+    const fetchDashboardData = async () => {
         try {
             const response = await api.get('/requests/');
             console.log('🔍 Dashboard API Response:', response.data);
@@ -37,15 +38,8 @@ export default function Dashboard() {
             setRecentRequests(requests.slice(0, 5));
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
-            // Set empty stats to avoid crash
             setStats({ total: 0, pending: 0, inProgress: 0, completed: 0 });
             setRecentRequests([]);
-        } finally {
-            setLoading(false);
-        }
-    };);
-        } catch (error) {
-            console.error('Failed to fetch dashboard data:', error);
         } finally {
             setLoading(false);
         }
@@ -53,7 +47,6 @@ export default function Dashboard() {
 
     if (loading) return <LinearProgress />;
 
-    // Use role_name (from serializer) or fallback to role.name
     const roleName = user?.role_name || user?.role?.name || 'student';
 
     // ---------- Student / Staff Dashboard ----------
@@ -188,4 +181,3 @@ export default function Dashboard() {
         </Box>
     );
 }
-
