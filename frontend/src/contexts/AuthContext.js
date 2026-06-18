@@ -24,8 +24,7 @@ export const AuthProvider = ({ children }) => {
                 const response = await api.get('/auth/users/me/');
                 setUser(response.data);
             } catch (error) {
-                console.log('❌ checkAuth failed – clearing token');
-                debugger;  // <-- PAUSE HERE before clearing
+                console.warn('checkAuth failed – clearing token');
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
                 delete api.defaults.headers.common['Authorization'];
@@ -35,14 +34,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = async (username, password) => {
-        console.log('🔐 Login attempt:', username);
         try {
             const response = await api.post('/token/', { username, password });
-            console.log('✅ Token response:', response.data);
             if (response.data.access) {
                 localStorage.setItem('access_token', response.data.access);
                 localStorage.setItem('refresh_token', response.data.refresh);
-                console.log('💾 Token stored');
                 api.defaults.headers.common['Authorization'] = Bearer ;
                 const userResponse = await api.get('/auth/users/me/');
                 setUser(userResponse.data);
@@ -51,7 +47,7 @@ export const AuthProvider = ({ children }) => {
             }
             return false;
         } catch (error) {
-            console.error('❌ Login error:', error);
+            console.error('Login error:', error);
             enqueueSnackbar('Login failed', { variant: 'error' });
             return false;
         }
