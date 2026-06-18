@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
-const api = axios.create({ baseURL: 'http://localhost:8000/api' });
+const api = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000/api' });
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -77,3 +77,4 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+
