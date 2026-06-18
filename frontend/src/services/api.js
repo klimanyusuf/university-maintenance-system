@@ -11,10 +11,8 @@ api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
         if (token) {
-            // Add token as query parameter
             const separator = config.url.includes('?') ? '&' : '?';
             config.url = config.url + separator + 'token=' + token;
-            // Keep Authorization header as fallback
             config.headers.Authorization = 'Bearer ' + token;
         }
         return config;

@@ -7,22 +7,13 @@ export default function Notifications() {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchNotifications();
-    }, []);
+    useEffect(() => { fetchNotifications(); }, []);
 
     const fetchNotifications = async () => {
         try {
             const response = await api.get('/notifications/');
-            // Handle both paginated and non-paginated responses
-            let data = response.data;
-            if (data && typeof data === 'object' && data.results) {
-                data = data.results;
-            }
-            if (!Array.isArray(data)) {
-                data = [];
-            }
-            setNotifications(data);
+            const rawData = response.data.results || response.data;
+            setNotifications(Array.isArray(rawData) ? rawData : []);
         } catch (err) {
             console.error('Failed to fetch notifications:', err);
             setNotifications([]);
@@ -54,9 +45,7 @@ export default function Notifications() {
                             <ListItem key={notif.id} divider>
                                 <ListItemText primary={notif.title} secondary={notif.message} />
                                 <Box display="flex" alignItems="center">
-                                    {!notif.is_read && (
-                                        <Chip label="New" color="primary" size="small" sx={{ mr: 1 }} />
-                                    )}
+                                    {!notif.is_read && <Chip label="New" color="primary" size="small" sx={{ mr: 1 }} />}
                                     <IconButton onClick={() => markAsRead(notif.id)} disabled={notif.is_read}>
                                         <CheckCircle color={notif.is_read ? 'disabled' : 'action'} />
                                     </IconButton>
