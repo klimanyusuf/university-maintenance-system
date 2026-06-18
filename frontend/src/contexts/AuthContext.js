@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
                 const response = await api.get('/auth/users/me/');
                 setUser(response.data);
             } catch (error) {
-                console.warn('checkAuth failed – clearing token');
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
                 delete api.defaults.headers.common['Authorization'];
@@ -78,4 +77,3 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-

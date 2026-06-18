@@ -7,11 +7,9 @@ const api = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Simple interceptor – logs token, but no refresh logic
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
-        console.log('🔍 Interceptor – token:', token ? 'YES' : 'NO');
         if (token) {
             config.headers.Authorization = Bearer PASTE_TOKEN_HERE;
         }
@@ -21,4 +19,3 @@ api.interceptors.request.use(
 );
 
 export default api;
-
